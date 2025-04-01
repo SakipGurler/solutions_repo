@@ -197,6 +197,27 @@ plot_cosmic_velocities_comparison()
 plot_escape_velocity_vs_altitude()
 ```
 
+Cosmic Velocities (km/s):
+
+Earth:
+  first_cosmic: 7.91 km/s
+  second_cosmic: 11.19 km/s
+  third_cosmic: 12.35 km/s
+
+Mars:
+  first_cosmic: 3.55 km/s
+  second_cosmic: 5.03 km/s
+  third_cosmic: 10.05 km/s
+
+Jupiter:
+  first_cosmic: 42.57 km/s
+  second_cosmic: 60.20 km/s
+  third_cosmic: 5.40 km/s
+
+Sun:
+  first_cosmic: 436.82 km/s
+  second_cosmic: 617.75 km/s
+
 ![alt text](image-4.png)
 
 ![alt text](image-5.png)
