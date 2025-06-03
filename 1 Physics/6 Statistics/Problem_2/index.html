@@ -172,6 +172,168 @@
 <div class="document" itemscope="itemscope" itemtype="http://schema.org/Article" role="main">
 <div class="section" itemprop="articleBody">
 <h1 id="problem-2">Problem 2</h1>
+<h1 id="estimating-pi-using-monte-carlo-methods">Estimating Pi using Monte Carlo Methods</h1>
+<h2 id="overview">Overview</h2>
+<p>Monte Carlo methods use randomness to solve numerical problems. We'll explore two elegant approaches to estimate π: the circle method and Buffon's Needle problem.</p>
+<h2 id="part-1-circle-based-monte-carlo-method">Part 1: Circle-Based Monte Carlo Method</h2>
+<h3 id="theoretical-foundation">Theoretical Foundation</h3>
+<ul>
+<li>Generate random points in a unit square [-1,1] × [-1,1]</li>
+<li>Count points inside the unit circle (x² + y² ≤ 1)</li>
+<li><strong>Formula</strong>: π ≈ 4 × (points inside circle / total points)</li>
+<li><strong>Reasoning</strong>: Circle area = π, Square area = 4, Ratio = π/4</li>
+</ul>
+<p>import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from matplotlib.patches import Circle</p>
+<p>plt.style.use('seaborn-v0_8')
+sns.set_palette("husl")</p>
+<p>class MonteCarloPI:
+    def <strong>init</strong>(self):
+        self.results = {}</p>
+<pre><code>def estimate_pi_circle(self, n_points, visualize=False):
+    np.random.seed(42)
+
+    x = np.random.uniform(-1, 1, n_points)
+    y = np.random.uniform(-1, 1, n_points)
+
+    distances = x**2 + y**2
+    inside_circle = distances &lt;= 1
+
+    pi_estimate = 4 * np.sum(inside_circle) / n_points
+
+    if visualize:
+        self.visualize_circle_method(x, y, inside_circle, pi_estimate)
+
+    return pi_estimate, inside_circle
+
+def visualize_circle_method(self, x, y, inside_circle, pi_estimate):
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+
+    inside_x, inside_y = x[inside_circle], y[inside_circle]
+    outside_x, outside_y = x[~inside_circle], y[~inside_circle]
+
+    ax1.scatter(inside_x, inside_y, c='red', s=1, alpha=0.6, label=f'Inside Circle ({len(inside_x)})')
+    ax1.scatter(outside_x, outside_y, c='blue', s=1, alpha=0.6, label=f'Outside Circle ({len(outside_x)})')
+
+    circle = Circle((0, 0), 1, fill=False, color='black', linewidth=2)
+    ax1.add_patch(circle)
+    ax1.plot([-1, 1, 1, -1, -1], [-1, -1, 1, 1, -1], 'k-', linewidth=2)
+
+    ax1.set_xlim(-1.1, 1.1)
+    ax1.set_ylim(-1.1, 1.1)
+    ax1.set_aspect('equal')
+    ax1.set_title(f'Monte Carlo Pi Estimation\nπ ≈ {pi_estimate:.6f} | Error: {abs(pi_estimate - np.pi):.6f}')
+    ax1.legend()
+    ax1.grid(True, alpha=0.3)
+
+    zoom_mask = (x &gt; 0.5) &amp; (y &gt; 0.5)
+    zoom_inside = inside_circle[zoom_mask]
+    zoom_x, zoom_y = x[zoom_mask], y[zoom_mask]
+
+    ax2.scatter(zoom_x[zoom_inside], zoom_y[zoom_inside], c='red', s=10, alpha=0.8, label='Inside')
+    ax2.scatter(zoom_x[~zoom_inside], zoom_y[~zoom_inside], c='blue', s=10, alpha=0.8, label='Outside')
+
+    theta = np.linspace(0, np.pi/2, 100)
+    circle_x = np.cos(theta)
+    circle_y = np.sin(theta)
+    ax2.plot(circle_x, circle_y, 'k-', linewidth=2)
+
+    ax2.set_xlim(0.5, 1.1)
+    ax2.set_ylim(0.5, 1.1)
+    ax2.set_aspect('equal')
+    ax2.set_title('Zoomed View (Upper Right)')
+    ax2.legend()
+    ax2.grid(True, alpha=0.3)
+
+    plt.tight_layout()
+    plt.show()
+
+def estimate_pi_buffon(self, n_needles, needle_length=1.0, line_distance=1.0):
+    if needle_length &gt; line_distance:
+        raise ValueError("Needle length must be less than or equal to the line distance.")
+
+    np.random.seed(42)
+    theta = np.random.uniform(0, np.pi/2, n_needles)
+    d = np.random.uniform(0, line_distance / 2, n_needles)
+
+    hits = d &lt;= (needle_length / 2) * np.sin(theta)
+    n_hits = np.sum(hits)
+
+    if n_hits == 0:
+        return None, 0
+
+    pi_estimate = (2 * needle_length * n_needles) / (line_distance * n_hits)
+    return pi_estimate, n_hits
+
+def compare_methods(self, n_samples):
+    pi_circle, _ = self.estimate_pi_circle(n_samples)
+    pi_buffon, hits = self.estimate_pi_buffon(n_samples)
+
+    print(f"Circle Method: π ≈ {pi_circle:.6f}")
+    if hits &gt; 0:
+        print(f"Buffon's Needle Method: π ≈ {pi_buffon:.6f} (Hits: {hits})")
+    else:
+        print("Buffon's Needle Method: Not enough hits to estimate π")
+</code></pre>
+<h1 id="usage-example">Usage Example:</h1>
+<p>if <strong>name</strong> == "<strong>main</strong>":
+    simulator = MonteCarloPI()
+    print("--- Estimating with Circle Method ---")
+    pi_estimate_circle, _ = simulator.estimate_pi_circle(10000, visualize=True)
+    print(f"Estimated π (Circle): {pi_estimate_circle:.6f}\n")</p>
+<pre><code>print("--- Estimating with Buffon's Needle Method ---")
+pi_estimate_buffon, hits = simulator.estimate_pi_buffon(10000)
+if hits &gt; 0:
+    print(f"Estimated π (Buffon): {pi_estimate_buffon:.6f} (Hits: {hits})")
+else:
+    print("Not enough hits in Buffon's Needle method to estimate π")
+
+print("\n--- Comparison ---")
+simulator.compare_methods(10000)
+</code></pre>
+<p>efficiency_comparison()
+```</p>
+<p>--- Estimating with Circle Method ---</p>
+<p><img alt="alt text" src="../image-4.png"/></p>
+<p>Estimated π (Circle): 3.134800</p>
+<p>--- Estimating with Buffon's Needle Method ---
+Estimated π (Buffon): 3.182180 (Hits: 6285)</p>
+<p>--- Comparison ---
+Circle Method: π ≈ 3.134800
+Buffon's Needle Method: π ≈ 3.182180 (Hits: 6285)</p>
+<h2 id="key-insights">Key Insights</h2>
+<h3 id="convergence-characteristics">Convergence Characteristics</h3>
+<ol>
+<li><strong>Circle Method</strong>: </li>
+<li>Faster convergence due to larger sample space</li>
+<li>Error decreases as O(1/√n)</li>
+<li>
+<p>More stable estimates</p>
+</li>
+<li>
+<p><strong>Buffon's Needle</strong>: </p>
+</li>
+<li>Slower convergence, higher variance</li>
+<li>Sensitive to crossing events</li>
+<li>Historical significance in probability theory</li>
+</ol>
+<h3 id="computational-efficiency">Computational Efficiency</h3>
+<ul>
+<li>Circle method is computationally simpler</li>
+<li>Buffon's method requires trigonometric calculations</li>
+<li>Both methods demonstrate Monte Carlo's power</li>
+</ul>
+<h3 id="practical-applications">Practical Applications</h3>
+<ul>
+<li><strong>Quality Control</strong>: Estimating defect rates</li>
+<li><strong>Finance</strong>: Risk assessment and option pricing</li>
+<li><strong>Physics</strong>: Particle simulations and nuclear calculations</li>
+<li><strong>Computer Graphics</strong>: Ray tracing and rendering</li>
+</ul>
+<h3 id="mathematical-beauty">Mathematical Beauty</h3>
+<p>These methods showcase how random processes can solve deterministic problems, demonstrating the fundamental connection between probability and geometry that underlies much of modern computational mathematics.</p>
 </div>
 </div><footer>
 <div aria-label="Footer Navigation" class="rst-footer-buttons" role="navigation">
